@@ -1,0 +1,72 @@
+Step 1: Setup AWS Services
+	DynamoDB → Stores structured data
+	DynamoDB Streams → Triggers Lambda on new records
+	AWS Lambda → Converts data to CSV and uploads to S3
+	S3 → Stores the generated CSV files
+
+Step 2: Create an S3 Bucket
+	Go to AWS S3 Console → Click Create Bucket
+	Enter a unique Bucket Name (e.g., dynamodb-to-s3-bucket)
+	Select Region (close to your location)
+	Block Public Access → Keep all options enabled (for security)
+	Click Create bucket
+
+Step 3: Create a DynamoDB Table
+	Go to AWS DynamoDB Console → Click Create Table
+	Enter the following details:
+	Table Name: CSVData
+	Partition Key: id (String)
+	Click Create table
+
+Step 4: Enable DynamoDB Streams
+	Open CSVData Table → Click Exports and streams
+	Under DynamoDB Streams, click Enable Stream
+	Select New and Old Images
+	Copy the Stream ARN (needed for later steps)
+
+Step 5: Create an AWS Lambda Function
+	Go to AWS Lambda Console → Click Create function
+	Select Author from scratch
+	Enter:
+	Function Name: DynamoDBToS3Processor
+	Runtime: Python 3.x
+	Permissions: Create a new role with basic Lambda permissions
+	Click Create function
+
+Step 6: Attach DynamoDB Stream as Lambda Trigger
+	Open DynamoDBToS3Processor function → Go to Triggers
+	Click Add trigger
+	Select DynamoDB
+	Choose CSVData Table
+	Paste the Stream ARN (copied earlier)
+	Set Batch size: 100
+	Click Add
+
+Step 7: Write and Deploy the Lambda Function
+	Open DynamoDBToS3Processor → Go to Code
+	Replace existing code with the Python script
+	Click Deploy
+
+Step 8: Update IAM Role for Lambda
+	Go to AWS IAM Console → Click Roles
+	Find the Lambda Execution Role
+	Click Attach Policies → Search and attach:
+	AmazonDynamoDBFullAccess
+	AmazonS3FullAccess
+	Click Save changes
+
+Step 9: Test the Process
+	Insert Data into DynamoDB
+	Go to DynamoDB Console → Open CSVData Table
+	Click Explore Table Items → Create Item
+	Add sample data:
+	Click Save
+
+Step 10: Verify the CSV File in S3
+	Go to AWS S3 Console → Open dynamodb-to-s3-bucket
+	check for the csv file
+
+
+
+
+
